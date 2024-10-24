@@ -18,7 +18,7 @@
     $(function(){
         setInterval(function(){
             timer();
-        },500);
+        },100);
     });  
       
     // ready クリックの処理の登録
@@ -40,10 +40,8 @@
         });
 
         $('#btnD').click(function(e) {
-            btnCClick(e);
+            btnDClick(e);
         });
-
-        init();
     });
     
     function rgbToColor(r,g,b){
@@ -160,6 +158,7 @@ var startTime = 0;
 var period = 0;
 var rest = 0;
 var etime = 0;
+var lapTimes = []; 
 
     
     // ボタンの初期設定
@@ -169,84 +168,65 @@ var etime = 0;
         $('#btnC').prop('disabled', false);
         $('#btnD').prop('disabled', false);
     }
-
-    // Alarmの処理
-    function alarm(){
-        var canvas = $("#mycanvas")[0];
-        var ctx = canvas.getContext("2d");
-        var img = new Image();
-        img.src = "ksuisbg.gif";
-        img.onload = function() {
-            ctx.drawImage(img, 0, 0, 300, 300);
-        };
-
-        var audio = new Audio();
-        audio.src = "pin.wav";
-        audio.play();
-        
-    }
     
     // ButtonAがクリックされた時の処理
     function btnAClick(e){
         active = true;
         startTime = new Date();
-        
     }
 
     // ButtonBがクリックされた時の処理
     function btnBClick(e){
         active = false;
-        
-        
     }
 
     // ButtonCがクリックされた時の処理
     function btnCClick(e){
-        alarm();
         active = false;
-        period = 60* parseInt( $("#minute").val() ) + parseInt( $("#second").val() );
-        $("#time").html("経過時間： 0");
-        $("#remain").html("残り時間： " + period);
-        
+        startTime = new Date();
+        $("#time").html("0:00.00");
+        lapTimes = []; // ラップタイムをリセット
+        $("#lapTimes").html(""); // 表示をクリア
     }
 
     function btnDClick(e) {
-        
+        if (active) {
+            lapTimes.push($("#time").html()); // 現在のタイムをラップとして保存
+            displayLapTimes(); // ラップタイムを表示
+        }
     }
 
-    
- 
     // 繰り返し実行する処理
     function timer(){  
         if(active) {
-            etime = parseInt( (new Date() - startTime)/1000 );
-            rest = period - etime;
-            $("#time").html("経過時間： " + etime);
-            $("#remain").html("残り時間： " + rest);
-            analog(rest);
+            etime = (new Date() - startTime);
+            var totalsecond = (etime / 1000).toFixed(2);
+            var minute = Math.floor(totalsecond / 60);
+            var second = (totalsecond % 60).toFixed(2);
+            $("#time").html(minute + ":" + second.padStart(5, '0'));
+            
         }
-            if(rest <= 0) {
-                active = false;
-                alarm();
-            }
-        
     } 
+    // ラップタイム表示関数
+    function displayLapTimes() {
+        var lapTimesHtml = lapTimes.map((lap, index) => `Lap ${index + 1}: ${lap}`).join('<br>');
+        $("#lapTimes").html(lapTimesHtml);
+    }
+
+    // Button Dのクリックハンドラを更新
+    $('#btnD').click(function(e) {
+        btnDClick(e);
+    });
 
   </script>
 </head>
 <body>
     <canvas id="mycanvas" width="200" height="200">Test</canvas>
-
-    <div id="minuteStr">〇</div>
-    <div id="secondStr">〇</div>
-
-    <div id="remain">Remaining time</div>
     <div id="time">Time</div>
+    <div id="lapTimes"></div>
     <button id="btnA">Start</button>  
     <button id="btnB">Stop</button>  
-    <button id="btnC">Set</button> 
+    <button id="btnC">reset</button> 
     <button id="btnD">lap</button> 
-    <input type="number" id="minute" value=0 >
-    <input type="number" id="second" value=0 >
 </body>
 </html>
