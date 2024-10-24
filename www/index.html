@@ -43,114 +43,11 @@
             btnDClick(e);
         });
     });
-    
-    function rgbToColor(r,g,b){
-        return "#" + hex02(r)+hex02(g)+hex02(b);
-    }
-    
-    function hex02(x) {
-        var str = "0"+x.toString(16);
-        return str.substring(str.length-2);
-    }
-    
-    function decS2(x) {
-        if (x<10) {
-            return "&nbsp;"+x.toString(10);
-        } else { 
-            return x.toString(10);
-        }
-    }
-    
-    function dec02(x) {
-        var str = "0"+x.toString(10);
-        return str.substring(str.length-2);        
-    }
 
-    var debug = false;
-    // Statusがクリックされた時の処理
-    function setDebugMode(e){
-        debug = !debug;
-        $("#status").html("Debug Mode: "+debug);
+    function main() {
+        $('#btnA').css("font-family", "fantasy");
+        $('#btnA').css("background-color", "lightgray");
     }
-    
-    // 座標を計算
-    // getX(中心x座標,角度(1で一周),長さ(1で最大)
-    function getX(cx,d,r){
-        return cx + Math.sin(d*2*3.14)*cx*r;
-    }
-    // getY(中心y座標,角度(1で一周),長さ(1で最大)
-    function getY(cy,d,r){
-        return cy - Math.cos(d*2*3.14)*cy*r;
-    }
-    // 線を描く
-    // line(context,x1,y1,x2,y2,線の太さ,色)    
-    function line(ctx,x1,y1,x2,y2,width,color){
-        ctx.lineWidth = width; 
-        ctx.lineCap = "round"; 
-        ctx.strokeStyle = color;
-        ctx.beginPath();
-        ctx.moveTo(x1, y1);
-        ctx.lineTo(x2, y2);
-        ctx.stroke();        
-    }    
-    // 時計 clock(時, 分, 秒, 残り時間が短い時に不要な針を隠す)
-    function clock(hour,minute,second,hide){
-        var canvas = $('#mycanvas')[0];
-        var ctx = canvas.getContext('2d');
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.4)'; 
-        ctx.fillRect(0,0,canvas.width,canvas.height);
-        var cx = canvas.width/2;
-        var cy = canvas.height/2;
-        var ds = second/60;
-        var dm = (minute+ds)/60;
-        var dh = (hour%12+dm)/12;
-
-        for(var i = 0; i < 60; i++) {
-            var px = getX(cx,i/60,0.9);
-            var py = getY(cy,i/60,0.9);
-            ctx.fillStyle = 'rgb(0, 255, 0)'; 
-            ctx.beginPath();
-            ctx.arc(px, py, 2, 0, Math.PI*2, false);
-            ctx.fill();
-        }
-        
-        for(var i = 0; i < 12; i++) {
-            var px = getX(cx,i/12,0.9);
-            var py = getY(cy,i/12,0.9);
-            ctx.fillStyle = 'rgb(255, 255, 0)'; 
-            ctx.beginPath();
-            ctx.arc(px, py, 5, 0, Math.PI*2, false);
-            ctx.fill();
-        }
-
-        if ((!hide) || hour > 0) {
-            var px = getX(cx,dh,0.4);
-            var py = getY(cy,dh,0.4);
-            line(ctx,cx,cy,px,py,20, 'rgb(255, 100, 162)')
-        }
-        if ((!hide) || hour > 0|| minute > 0) {
-            var px = getX(cx,dm,0.6);
-            var py = getY(cy,dm,0.6);
-            line(ctx,cx,cy,px,py,15, 'rgb(128, 255, 162)')
-        }
-        var px = getX(cx,ds,0.9);
-        var py = getY(cy,ds,0.9);
-        line(ctx,cx,cy,px,py,5, 'rgb(128, 100, 255)')
-    }
-
-    // 残り秒数アナログ表示
-    function analog(rest){
-        var h = parseInt(rest/3600);
-        var m = parseInt((rest-h*3600)/60);
-        var s = parseInt(rest-h*3600-m*60);
-        clock(h,m,s,true);
-
-    }
-
-
-
-// これより上は編集しなくて良い
-
 
     // 変数宣言
 var active = false;
